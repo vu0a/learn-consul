@@ -1,0 +1,8 @@
+.DS_Store
+.vscode
+.env
+*.log
+config.yaml
+config.yml
+config.json
+config.toml
