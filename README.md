@@ -131,3 +131,39 @@ server-03  [2a:**:**:70]:8301            alive   server  1.13.2  2         dc1  
 client-01  [2a:**:**:3e]:8301            alive   client  1.13.2  2         dc1  default    <default>
 client-02  [20:**:**7:1]:8301  alive   client  1.13.2  2         dc1  default    <default>
 ```
+
+## API
+
+> [官方文档](https://www.consul.io/api-docs)
+
+### 服务注册
+
+> [官方文档](https://www.consul.io/api-docs/agent/service#register-service)
+
+```bash
+ curl -X PUT 'http://[::1]:8500/v1/agent/service/register' -H 'content-type:application/json' -d '{"Name":"learn-consul-1","ID":"learn-consul-1","Address":"[20:*:01]","Port":54321}'
+```
+
+### 取消注册
+
+> https://www.consul.io/api-docs/agent/service#deregister-service
+
+```bash
+curl -X PUT 'http://[::1]:8500/v1/agent/service/deregister/learn-consul-1' -H 'content-type:application/json'
+```
+
+### 服务列表
+
+> https://www.consul.io/api-docs/agent/service#list-services
+
+```bash
+curl -X GET 'http://[::1]:8500/v1/agent/services' -H 'content-type:application/json'
+```
+
+### 过滤服务
+
+> https://www.consul.io/api-docs/agent/service#filtering
+
+### 健康检查
+
+> https://www.consul.io/api-docs/agent/check
