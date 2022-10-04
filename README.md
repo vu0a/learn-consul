@@ -54,3 +54,80 @@ consul agent -dev -client=[::]
 ```bash
 go get -u github.com/hashicorp/consul/api
 ```
+
+## 集群
+
+- Server 通常奇数
+
+- 后续扩展通常增加 Client 即可
+
+### 启动服务端（以 3 个节点为例）
+
+> 每个服务端节点执行下面的命令
+
+```bash
+# 节点名称
+NODE_NAME="server-01" && \
+# 数据保存目录
+DATA_DIR="/var/consul/data/${NODE_NAME}" && \
+# 集群中节点数量
+BOOTSTRAP_EXPECT=3 && \
+mkdir -p $DATA_DIR && \
+consul agent -server \
+	-bind=[::] \
+	-client=[::] -ui\
+	-bootstrap-expect=$BOOTSTRAP_EXPECT \
+	-data-dir=$DATA_DIR \
+	-node=$NODE_NAME
+```
+
+### 启动客户端
+
+> 每个客户端执行下面的命令
+
+```bash
+# 节点名称
+NODE_NAME="client-02" && \
+# 数据保存目录
+DATA_DIR="/var/consul/data/${NODE_NAME}" && \
+mkdir -p $DATA_DIR && \
+consul agent \
+	-client=[::] \
+	-bind=[::] \
+	-data-dir=$DATA_DIR \
+	-node=$NODE_NAME
+```
+
+### 加入集群
+
+- 除了主节点外，其它服务端节点和客户端节点都需要执行本操作
+
+- 参数即为主节点的地址
+
+```bash
+consul join '[主节点IPV6地址]'
+```
+
+或
+
+```bash
+consul join '主节点IPV4地址'
+```
+
+### 查询节点
+
+> 任意服务端和客户端节点都可执行
+
+```bash
+consul members
+```
+
+```
+$ consul members
+Node       Address                                  Status  Type    Build   Protocol  DC   Partition  Segment
+server-01  [2a:**:**:0b]:8301            alive   server  1.13.2  2         dc1  default    <all>
+server-02  [2a:**:**:d9]:8301            alive   server  1.13.2  2         dc1  default    <all>
+server-03  [2a:**:**:70]:8301            alive   server  1.13.2  2         dc1  default    <all>
+client-01  [2a:**:**:3e]:8301            alive   client  1.13.2  2         dc1  default    <default>
+client-02  [20:**:**7:1]:8301  alive   client  1.13.2  2         dc1  default    <default>
+```
